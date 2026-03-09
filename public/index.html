@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp API | Authentication</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        .whatsapp-green { background-color: #25D366; }
+        .whatsapp-dark { background-color: #075E54; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+    <header class="whatsapp-dark text-white p-4 shadow-lg">
+        <div class="container mx-auto flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.06 3.973l-1.127 4.113 4.209-1.105a7.847 7.847 0 0 0 3.788.974h.002c4.368 0 7.926-3.558 7.93-7.93a7.856 7.856 0 0 0-2.333-5.608zm-5.607 12.757a6.513 6.513 0 0 1-3.323-.905l-.238-.141-2.472.648.66-2.411-.155-.247a6.514 6.514 0 0 1-1.006-3.489c0-3.596 2.924-6.52 6.521-6.52a6.51 6.51 0 0 1 4.61 1.913 6.51 6.51 0 0 1 1.91 4.61c-.002 3.596-2.924 6.519-6.521 6.519zm3.646-4.945c-.2-.1-1.185-.584-1.369-.652-.184-.068-.318-.102-.452.102-.134.204-.519.652-.636.786-.117.134-.234.15-.434.05-.201-.099-.847-.312-1.613-.994-.596-.531-.999-1.187-1.116-1.387-.117-.2-.013-.308.087-.408.09-.089.201-.234.301-.351.1-.117.134-.199.201-.333.067-.134.034-.251-.017-.351-.05-.1-.452-1.089-.62-1.492-.163-.393-.332-.34-.452-.346-.117-.006-.252-.007-.387-.007-.135 0-.355.051-.541.251-.186.201-.711.695-.711 1.694 0 1.001.727 1.967.828 2.101.101.134 1.43 2.185 3.464 3.065.484.21 0 .378.484.21.86.371 1.15.277 1.15.277.561-.157 1.185-.484 1.353-.943.167-.46.167-.854.117-.942-.05-.088-.184-.136-.384-.236z"/>
+            </svg>
+            <h1 class="text-xl font-bold">WhatsApp API Gateway</h1>
+        </div>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-6">
+        <div class="bg-white rounded-lg shadow-2xl p-8 max-w-md w-full text-center">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Connect Your Device</h2>
+            <p class="text-gray-500 mb-8">Scan the QR code to enable message sending via REST API.</p>
+
+            <div id="status-container" class="mb-6 inline-flex items-center px-4 py-2 rounded-full bg-yellow-100 text-yellow-700 text-sm font-medium">
+                <span class="relative flex h-3 w-3 mr-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+                </span>
+                <span id="status">Connecting...</span>
+            </div>
+
+            <div class="flex justify-center items-center bg-gray-50 border-2 border-dashed border-gray-200 rounded-xl p-4 min-h-[300px] relative">
+                <img id="qrcode" src="" class="hidden w-full h-auto rounded-lg shadow-sm" alt="WhatsApp QR Code">
+                
+                <div id="qr-placeholder" class="text-gray-400">
+                    <p>Waiting for server...</p>
+                </div>
+            </div>
+
+            <div class="mt-8 text-left border-t pt-4 text-xs text-gray-400">
+                <p>● Ensure your phone is connected to the internet.</p>
+                <p>● The session will be saved automatically for future use.</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const statusDiv = document.getElementById("status");
+        const statusContainer = document.getElementById("status-container");
+        const qrImg = document.getElementById("qrcode");
+        const qrPlaceholder = document.getElementById("qr-placeholder");
+
+        const socket = io(); 
+
+        socket.on("qr_code", (data) => {
+            statusDiv.innerText = "QR Received! Scan now.";
+            statusContainer.classList.replace('bg-yellow-100', 'bg-blue-100');
+            statusContainer.classList.replace('text-yellow-700', 'text-blue-700');
+            
+            qrImg.src = data.src;
+            qrImg.classList.remove("hidden");
+            qrPlaceholder.classList.add("hidden");
+        });
+
+        socket.on("status", (data) => {
+            statusDiv.innerText = data.message;
+            
+            if (data.connected) {
+                // Change status to success green
+                statusContainer.classList.remove('bg-yellow-100', 'bg-blue-100');
+                statusContainer.classList.add('bg-green-100', 'text-green-700');
+                
+                qrImg.classList.add("hidden");
+                qrPlaceholder.classList.remove("hidden");
+                qrPlaceholder.innerHTML = `
+                    <div class="text-green-500">
+                        <svg class="w-20 h-20 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <p class="font-bold">Ready to send messages!</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
