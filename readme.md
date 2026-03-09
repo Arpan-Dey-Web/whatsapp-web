@@ -40,8 +40,8 @@ Implemented **rate limiting** to prevent abuse or spamming of API endpoints.
 ## 1️⃣ Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/whatsapp-api.git
-cd whatsapp-api
+git clone https://github.com/Arpan-Dey-Web/whatsapp-web.git
+cd whatsapp-web
 ```
 
 ---
@@ -263,25 +263,3 @@ whatsapp-api
 - This project **simulates human-like messaging behavior** using controlled delays.
 
 ---
-
-# 🧪 Future Improvements
-
-Possible upgrades:
-
-- Redis-based distributed queue
-- Web dashboard for monitoring
-- Message scheduling
-- Multi-session support
-- Docker containerization
-
----
-
----
-
-# 🚀 Final Git Push
-
-```bash
-git add README.md
-git commit -m "docs: improve README with full documentation"
-git push origin main
-```
